@@ -1,0 +1,994 @@
+F00:0001       vasm equ 1	
+F00:0002       ;Uncomment one of the lines below to select your compilation target
+F00:0003       
+F00:0004       ;BuildCPC equ 1	; Build for Amstrad CPC
+F00:0005       ;BuildMSX equ 1 ; Build for MSX
+F00:0006       ;BuildTI8 equ 1 ; Build for TI-83+
+F00:0007       ;BuildZXS equ 1 ; Build for ZX Spectrum
+F00:0008       ;BuildENT equ 1 ; Build for Enterprise
+F00:0009       ;BuildSAM equ 1 ; Build for SamCoupe
+F00:0010       ;BuildSMS equ 1 
+F00:0011       ;BuildSGG equ 1
+F00:0012       BuildGMB equ 1 ; Build for GameBoy Regular
+F00:0013       ;BuildGBC equ 1 ; Build for GameBoyColor 
+F00:0014       
+F00:0015       ;read "..\SrcALL\V1_Header.asm"
+F00:0016       	include "..\SrcALL\V1_Header.asm"
+F01:0001       	
+F01:0002       
+F01:0003       	ifdef BuildCPC
+F01:0004       		read "..\SrcCPC\CPC_V1_Header.asm" 
+F01:0005       	endif
+F01:0006       	ifdef BuildMSX
+F01:0007       		read "..\SrcMSX\MSX_V1_Header.asm" 
+F01:0008       	endif
+F01:0009       	ifdef BuildTI8
+F01:0010       		read "..\SrcTI\TI_V1_header.asm" 
+F01:0011       	endif
+F01:0012       	ifdef BuildZXS
+F01:0013       		read "..\SrcZX\ZX_V1_header.asm" 
+F01:0014       	endif
+F01:0015       	ifdef BuildENT
+F01:0016       		read "..\SrcENT\ENT_V1_header.asm" 
+F01:0017       	endif
+F01:0018       	ifdef BuildSAM
+F01:0019       		read "..\SrcSAM\SAM_V1_header.asm" 
+F01:0020       	endif
+F01:0021       
+F01:0022       	ifdef BuildSMS
+F01:0023       		read "..\SrcSMS\SMS_V1_header.asm" 
+F01:0024       	endif
+F01:0025       	ifdef BuildSGG
+F01:0026       		read "..\SrcSMS\SMS_V1_header.asm" 
+F01:0027       	endif
+F01:0028       
+F01:0029       	ifdef BuildGMB
+F01:0030       		include "..\SrcGB\GB_V1_header.asm" 
+F02:0001       	org &0000
+F02:0002       	
+F02:0003       ; IRQs
+F02:0004       	org &0040
+F02:0005       ;sVblankPos:
+F02:0006       	reti
+               S02:00000040:  D9
+F02:0007       
+F02:0008       sLCDC:
+F02:0009       	org &0048
+F02:0010       	reti
+               S03:00000048:  D9
+F02:0011       ;sTimer_Overflow:
+F02:0012       	org &0050
+F02:0013       
+F02:0014       	reti
+               S04:00000050:  D9
+F02:0015       ;sSerial:
+F02:0016       	org &0058
+F02:0017       ;SECTION	"Serial",HOME($0058)
+F02:0018       	reti
+               S05:00000058:  D9
+F02:0019       ;sp1thru4:
+F02:0020       ;SECTION	"p1thru4",HOME($0060)
+F02:0021       	org &0060
+F02:0022       	reti
+               S06:00000060:  D9
+F02:0023       
+F02:0024       ; ****************************************************************************************
+F02:0025       ; boot loader jumps to here.
+F02:0026       ; ****************************************************************************************
+F02:0027       sstart:
+F02:0028       	org &0100
+F02:0029       	nop
+               S07:00000100:  00
+F02:0030       	jp	begin
+               S07:00000101:  C3 50 01
+F02:0031       
+F02:0032       ; ****************************************************************************************
+F02:0033       ; ROM HEADER and ASCII character set
+F02:0034       ; ****************************************************************************************
+F02:0035       ; ROM header
+F02:0036       	
+F02:0037        DB $CE,$ED,$66,$66,$CC,$0D,$00,$0B,$03,$73,$00,$83,$00,$0C,$00,$0D
+               S07:00000104:  CE
+               S07:00000105:  ED
+               S07:00000106:  66
+               S07:00000107:  66
+               S07:00000108:  CC
+               S07:00000109:  0D
+               S07:0000010A:  00
+               S07:0000010B:  0B
+               S07:0000010C:  03
+               S07:0000010D:  73
+               S07:0000010E:  00
+               S07:0000010F:  83
+               S07:00000110:  00
+               S07:00000111:  0C
+               S07:00000112:  00
+               S07:00000113:  0D
+F02:0038        DB $00,$08,$11,$1F,$88,$89,$00,$0E,$DC,$CC,$6E,$E6,$DD,$DD,$D9,$99
+               S07:00000114:  00
+               S07:00000115:  08
+               S07:00000116:  11
+               S07:00000117:  1F
+               S07:00000118:  88
+               S07:00000119:  89
+               S07:0000011A:  00
+               S07:0000011B:  0E
+               S07:0000011C:  DC
+               S07:0000011D:  CC
+               S07:0000011E:  6E
+               S07:0000011F:  E6
+               S07:00000120:  DD
+               S07:00000121:  DD
+               S07:00000122:  D9
+               S07:00000123:  99
+F02:0039        DB $BB,$BB,$67,$63,$6E,$0E,$EC,$CC,$DD,$DC,$99,$9F,$BB,$B9,$33,$3E
+               S07:00000124:  BB
+               S07:00000125:  BB
+               S07:00000126:  67
+               S07:00000127:  63
+               S07:00000128:  6E
+               S07:00000129:  0E
+               S07:0000012A:  EC
+               S07:0000012B:  CC
+               S07:0000012C:  DD
+               S07:0000012D:  DC
+               S07:0000012E:  99
+               S07:0000012F:  9F
+               S07:00000130:  BB
+               S07:00000131:  B9
+               S07:00000132:  33
+               S07:00000133:  3E
+F02:0040       
+F02:0041        DB "EXAMPLE",0,0,0,0,0,0,0,0 ; Cart name - 15bytes
+               S07:00000134:  45 58 41 4D 50 4C 45
+               S07:0000013B:  00
+               S07:0000013C:  00
+               S07:0000013D:  00
+               S07:0000013E:  00
+               S07:0000013F:  00
+               S07:00000140:  00
+               S07:00000141:  00
+               S07:00000142:  00
+F02:0042        DB $80                         ; $143 - console $80 - color
+               S07:00000143:  80
+F02:0043        DB 0,0                       ; $144 - Licensee code (not important)
+               S07:00000144:  00
+               S07:00000145:  00
+F02:0044        DB 0                         ; $146 - SGB Support indicator
+               S07:00000146:  00
+F02:0045        DB 0	  		   			  ; $147 - Cart type
+               S07:00000147:  00
+F02:0046        DB 0                         ; $148 - ROM Size
+               S07:00000148:  00
+F02:0047        DB 0                         ; $149 - RAM Size
+               S07:00000149:  00
+F02:0048        DB 1                         ; $14a - Destination code
+               S07:0000014A:  01
+F02:0049        DB $33                       ; $14b - Old licensee code
+               S07:0000014B:  33
+F02:0050        DB 0                         ; $14c - Mask ROM version
+               S07:0000014C:  00
+F02:0051        DB 0                         ; $14d - Complement check (important)
+               S07:0000014D:  00
+F02:0052        DW 0                         ; $14e - Checksum (not important)
+               S07:0000014E:  00 00
+F02:0053       
+F02:0054        
+F02:0055       
+F02:0056       begin:
+F02:0057       	nop
+               S07:00000150:  00
+F02:0058       	di
+               S07:00000151:  F3
+F02:0059       	ld	sp, $ffff		; set the stack pointer to highest mem location + 1
+               S07:00000152:  31 FF FF
+F01:0031       	endif
+F01:0032       	ifdef BuildGBC
+F01:0033       		include "..\SrcGB\GB_V1_header.asm" 
+F01:0034       	endif
+F01:0035       
+F01:0036       	ifndef vasm
+F01:0037       		if BuildCPCv+BuildMSXv+BuildENTv+BuildSAMv+BuildTI8v+BuildZXSv
+F01:0038       			print "Bad Build - No target platform selected"
+F01:0039       			stop
+F01:0040       		endif
+F01:0041       
+F01:0042       		ifdef BuildCPC
+F01:0043       			if BuildMSXv+BuildZXSv+BuildENTv+BuildSAMv+BuildTI8v
+F01:0044       				print "Bad Build - Multiple target platforms selected"
+F01:0045       				stop
+F01:0046       			endif
+F01:0047       		endif
+F01:0048       		ifdef BuildMSX
+F01:0049       			if BuildCPCv+BuildZXSv+BuildENTv+BuildSAMv+BuildTI8v
+F01:0050       				print "Bad Build - Multiple target platforms selected"
+F01:0051       				stop
+F01:0052       			endif
+F01:0053       		endif
+F01:0054       		ifdef BuildZXS
+F01:0055       			if BuildCPCv+BuildMSXv+BuildENTv+BuildSAMv+BuildTI8v
+F01:0056       				print "Bad Build - Multiple target platforms selected"
+F01:0057       				stop
+F01:0058       			endif
+F01:0059       		endif
+F01:0060       		ifdef BuildENT
+F01:0061       			if BuildCPCv+BuildMSXv+BuildZXSv+BuildSAMv+BuildTI8v
+F01:0062       				print "Bad Build - Multiple target platforms selected"
+F01:0063       				stop
+F01:0064       			endif
+F01:0065       		endif
+F01:0066       		ifdef BuildSAM
+F01:0067       			if BuildCPCv+BuildMSXv+BuildENTv+BuildZXSv+BuildTI8v
+F01:0068       			
+F01:0069       				print "Bad Build - Multiple target platforms selected"
+F01:0070       				stop
+F01:0071       			endif
+F01:0072       		endif
+F01:0073       	endif
+F00:0017       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0018       ;
+F00:0019       ;			Start Your Program Here
+F00:0020       ;
+F00:0021       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0022       	
+F00:0023       	Call DOINIT	; Get ready
+               S07:00000155:  CD BF 01
+F00:0024       
+F00:0025       	call Cls
+               S07:00000158:  CD 35 02
+F00:0026       
+F00:0027       	ld hl,&0000		;Screen position - 0,0 is top left, H=X,L=Y
+               S07:0000015B:  21 00 00
+F00:0028       LocateAgain:
+F00:0029       	push hl
+               S07:0000015E:  E5
+F00:0030       		call Locate	;Set cursor position
+               S07:0000015F:  CD F8 02
+F00:0031       		ld hl,Message	
+               S07:00000162:  21 92 01
+F00:0032       		call PrintString;Print Message
+               S07:00000165:  CD EE 02
+F00:0033       
+F00:0034       	pop hl
+               S07:00000168:  E1
+F00:0035       	inc h	;Move Right 2
+               S07:00000169:  24
+F00:0036       	inc h
+               S07:0000016A:  24
+F00:0037       	inc l	;Move Down 1
+               S07:0000016B:  2C
+F00:0038       	ld a,l
+               S07:0000016C:  7D
+F00:0039       	cp 3	;We're going to do this 3 times
+               S07:0000016D:  FE 03
+F00:0040       	jp nz,LocateAgain
+               S07:0000016F:  C2 5E 01
+F00:0041       
+F00:0042       	call NewLine	;Newline command
+               S07:00000172:  CD E0 02
+F00:0043       
+F00:0044       	ld hl,Message2	;Press A key
+               S07:00000175:  21 A3 01
+F00:0045       	call PrintString
+               S07:00000178:  CD EE 02
+F00:0046       
+F00:0047       	call NewLine	;Newline command
+               S07:0000017B:  CD E0 02
+F00:0048       
+F00:0049       	call WaitChar	;Wait for a keypress
+               S07:0000017E:  CD A5 02
+F00:0050       
+F00:0051       	push af
+               S07:00000181:  F5
+F00:0052       		ld hl,Message3	;Print message
+               S07:00000182:  21 B0 01
+F00:0053       		call PrintString
+               S07:00000185:  CD EE 02
+F00:0054       	pop af
+               S07:00000188:  F1
+F00:0055       
+F00:0056       	call PrintChar	;Show Pressed key
+               S07:00000189:  CD 47 02
+F00:0057       	call NewLine
+               S07:0000018C:  CD E0 02
+F00:0058       
+F00:0059       
+F00:0060       	CALL SHUTDOWN ; return to basic or whatever
+               S07:0000018F:  CD BD 01
+F00:0061       ret
+F00:0062       
+F00:0063       
+F00:0064       Message: db 'Hello World 343!',255
+               S07:00000192:  48 65 6C 6C 6F 20 57 6F 72 6C 64 20 33 34 33 21
+               S07:000001A2:  FF
+F00:0065       Message2: db 'Press A Key:',255
+               S07:000001A3:  50 72 65 73 73 20 41 20 4B 65 79 3A
+               S07:000001AF:  FF
+F00:0066       Message3: db 'You Pressed:',255
+               S07:000001B0:  59 6F 75 20 50 72 65 73 73 65 64 3A
+               S07:000001BC:  FF
+F00:0067       
+F00:0068       
+F00:0069       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0070       ;
+F00:0071       ;			End of Your program
+F00:0072       ;
+F00:0073       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0074       
+F00:0075       	include "..\SrcALL\V1_Functions.asm"
+F03:0001       	ifdef BuildCPC
+F03:0002       		read "..\SrcCPC\CPC_V1_Functions.asm" 
+F03:0003       	endif
+F03:0004       	ifdef BuildMSX
+F03:0005       		read "..\SrcMSX\MSX_V1_Functions.asm" 
+F03:0006       	endif
+F03:0007       	ifdef BuildTi8
+F03:0008       		read "..\SrcTI\TI_V1_Functions.asm" 
+F03:0009       	endif
+F03:0010       	ifdef BuildZXS
+F03:0011       		read "..\SrcZX\ZX_V1_Functions.asm" 
+F03:0012       	endif
+F03:0013       	ifdef BuildENT
+F03:0014       		read "..\SrcENT\ENT_V1_Functions.asm" 
+F03:0015       	endif
+F03:0016       	ifdef BuildSAM
+F03:0017       		read "..\SrcSAM\SAM_V1_Functions.asm" 
+F03:0018       	endif
+F03:0019       
+F03:0020       	ifdef BuildSMS
+F03:0021       		read "..\SrcSMS\SMS_V1_Functions.asm" 
+F03:0022       	endif
+F03:0023       	ifdef BuildSGG
+F03:0024       		read "..\SrcSMS\SMS_V1_Functions.asm" 
+F03:0025       	endif
+F03:0026       
+F03:0027       	ifdef BuildGMB
+F03:0028       		include "..\SrcGB\GB_V1_Functions.asm" 
+F04:0001       NextCharX equ &C000
+F04:0002       NextCharY equ &C001
+F04:0003       SelKeyChar equ &C002
+F04:0004       SHUTDOWN:
+F04:0005       	di
+               S07:000001BD:  F3
+F04:0006       	halt
+               S07:000001BE:  76
+F04:0007       	
+F04:0008       DOINIT:
+F04:0009       	ld	a, %11100100 	; Window palette colors, from darkest to lightest
+               S07:000001BF:  3E E4
+F04:0010       	ld	($FF47), a		; CLEAR THE SCREEN
+               S07:000001C1:  EA 47 FF
+F04:0011       
+F04:0012       	ld	a,0			; SET SCREEN TO TO UPPER RIGHT HAND CORNER
+               S07:000001C4:  3E 00
+F04:0013       	ld	($FF43), a
+               S07:000001C6:  EA 43 FF
+F04:0014       	ld	($FF42), a		
+               S07:000001C9:  EA 42 FF
+F04:0015       
+F04:0016       	
+F04:0017       
+F04:0018       
+F04:0019       	call	StopLCD		; YOU CAN NOT LOAD $8000 WITH LCD ON
+               S07:000001CC:  CD 0E 03
+F04:0020       
+F04:0021       	
+F04:0022       	
+F04:0023       	ld	hl, FontData
+               S07:000001CF:  21 3B 03
+F04:0024       	ld	de, $8000 		; $8000
+               S07:000001D2:  11 00 80
+F04:0025       	ld	bc, 8*96		; the ASCII character set: 256 characters, each with 8 bytes of display data
+               S07:000001D5:  01 00 03
+F04:0026       	call	Copy2Bit	; load tile data
+               S07:000001D8:  CD 25 02
+F04:0027       	
+F04:0028       	ld c,0*8		;palette no
+               S07:000001DB:  0E 00
+F04:0029       	ld hl,GBPal
+               S07:000001DD:  21 33 03
+F04:0030       	call SetGBCPalettes
+               S07:000001E0:  CD EC 01
+F04:0031       	
+F04:0032       	
+F04:0033       	    ld      a,($FF40)
+               S07:000001E3:  FA 40 FF
+F04:0034               set     7,a             ; Reset bit 7 of LCDC
+               S07:000001E6:  CB FF
+F04:0035               ld      ($FF40),a
+               S07:000001E8:  EA 40 FF
+F04:0036       	
+F04:0037       	ret
+               S07:000001EB:  C9
+F04:0038       	
+F04:0039       SetGBCPalettes:
+F04:0040       
+F04:0041       ;		    -GRB
+F04:0042       	
+F04:0043       	ld a,(hl)  ;RB
+               S07:000001EC:  7E
+F04:0044       	and %00001111 ;B
+               S07:000001ED:  E6 0F
+F04:0045       	rlca
+               S07:000001EF:  07
+F04:0046       	ld d,a
+               S07:000001F0:  57
+F04:0047       	
+F04:0048       	
+F04:0049       	ld a,(hl)  
+               S07:000001F1:  7E
+F04:0050       	and %11110000 ;R
+               S07:000001F2:  E6 F0
+F04:0051       	rrca
+               S07:000001F4:  0F
+F04:0052       	rrca
+               S07:000001F5:  0F
+F04:0053       	rrca
+               S07:000001F6:  0F
+F04:0054       	ld e,a
+               S07:000001F7:  5F
+F04:0055       	
+F04:0056       	inc hl
+               S07:000001F8:  23
+F04:0057       	ld a,(hl) ;-G
+               S07:000001F9:  7E
+F04:0058       	rlca
+               S07:000001FA:  07
+F04:0059       	rlca
+               S07:000001FB:  07
+F04:0060       	rlca
+               S07:000001FC:  07
+F04:0061       	rlca
+               S07:000001FD:  07
+F04:0062       	
+F04:0063       	rla
+               S07:000001FE:  17
+F04:0064       	rl d
+               S07:000001FF:  CB 12
+F04:0065       	rla
+               S07:00000201:  17
+F04:0066       	rl d
+               S07:00000202:  CB 12
+F04:0067       	
+F04:0068       	
+F04:0069       	or e
+               S07:00000204:  B3
+F04:0070       	ld e,a
+               S07:00000205:  5F
+F04:0071       	
+F04:0072       	;;      xBBBBBGG GGGRRRRR
+F04:0073       	call SetGBCPAL
+               S07:00000206:  CD 13 02
+F04:0074       	
+F04:0075       	inc hl
+               S07:00000209:  23
+F04:0076       	
+F04:0077       	;ld a,'*'
+F04:0078       	;call PrintChar
+F04:0079       	;ld a,d
+F04:0080       	;call ShowHex
+F04:0081       	;ld a,e
+F04:0082       ;	call ShowHex
+F04:0083       	;ld a,'*'
+F04:0084       	;call PrintChar
+F04:0085       ;	
+F04:0086       	ld a,%00000010
+               S07:0000020A:  3E 02
+F04:0087       	add c
+               S07:0000020C:  81
+F04:0088       	ld c,a
+               S07:0000020D:  4F
+F04:0089       	and  %00000110
+               S07:0000020E:  E6 06
+F04:0090       	ret z
+               S07:00000210:  C8
+F04:0091       	;call ShowHex
+F04:0092       	jr SetGBCPalettes
+               S07:00000211:  18 D9
+F04:0093       	
+F04:0094       	
+F04:0095       SetGBCPAL:
+F04:0096       	push hl
+               S07:00000213:  E5
+F04:0097       		LD	HL,$FF68	; set up a pointer to the BCPS
+               S07:00000214:  21 68 FF
+F04:0098       		LD	A,C			; Load A with the write specification data
+               S07:00000217:  79
+F04:0099       		LDI	(HL),A		; place the data in the specification register and move the pointer to the  BCPD
+               S07:00000218:  22
+F04:0100       		LD	A,E			; get the low data BYTE
+               S07:00000219:  7B
+F04:0101       		LDI	(HL),A		; send the low data BYTE to the register
+               S07:0000021A:  22
+F04:0102       		LD	HL,$FF68	; set the pointer back to the BCPS
+               S07:0000021B:  21 68 FF
+F04:0103       		LD	A,C			; Load A with the write specification data
+               S07:0000021E:  79
+F04:0104       		INC	A			; Add 1 to the data, therefore setting BIT 0 which means we are now writing the high data BYTE
+               S07:0000021F:  3C
+F04:0105       		LDI	(HL),A		; place the data in the specification register and move the pointer to the BCPD
+               S07:00000220:  22
+F04:0106       		LD	A,D			; get the high data BYTE
+               S07:00000221:  7A
+F04:0107       		LDI	(HL),A		; send the high data BYTE to the register
+               S07:00000222:  22
+F04:0108       	Pop hl
+               S07:00000223:  E1
+F04:0109       	ret
+               S07:00000224:  C9
+F04:0110       	
+F04:0111       Copy2Bit:
+F04:0112       	inc	b
+               S07:00000225:  04
+F04:0113       	inc	c
+               S07:00000226:  0C
+F04:0114       	jr	.skip
+               S07:00000227:  18 05
+F04:0115       .loop	ldi	a,(hl)
+               S07:00000229:  2A
+F04:0116       	ld	(de),a
+               S07:0000022A:  12
+F04:0117       	inc	de
+               S07:0000022B:  13
+F04:0118               ld      (de),a
+               S07:0000022C:  12
+F04:0119               inc     de
+               S07:0000022D:  13
+F04:0120       .skip	dec	c
+               S07:0000022E:  0D
+F04:0121       	jr	nz,.loop
+               S07:0000022F:  20 F8
+F04:0122       	dec	b
+               S07:00000231:  05
+F04:0123       	jr	nz,.loop
+               S07:00000232:  20 F5
+F04:0124       	ret
+               S07:00000234:  C9
+F04:0125       	
+F04:0126       Cls:
+F04:0127       	ld	hl, $9800
+               S07:00000235:  21 00 98
+F04:0128       	
+F04:0129       	ld a,l
+               S07:00000238:  7D
+F04:0130       	ld (NextCharX),a
+               S07:00000239:  EA 00 C0
+F04:0131       	ld (NextCharY),a
+               S07:0000023C:  EA 01 C0
+F04:0132       	
+F04:0133       	
+F04:0134       	ld a,' '-32
+               S07:0000023F:  3E 00
+F04:0135       	ld	bc, 32 * 32
+               S07:00000241:  01 00 04
+F04:0136       	jp	SetVRAM
+               S07:00000244:  C3 23 03
+F04:0137       	
+F04:0138       	
+F04:0139       PrintChar:
+F04:0140       	call PrintCharNoInc
+               S07:00000247:  CD 54 02
+F04:0141       	push af
+               S07:0000024A:  F5
+F04:0142       		ld a,(NextCharX)
+               S07:0000024B:  FA 00 C0
+F04:0143       		inc a
+               S07:0000024E:  3C
+F04:0144       		ld (NextCharX),a
+               S07:0000024F:  EA 00 C0
+F04:0145       	pop af
+               S07:00000252:  F1
+F04:0146       	ret
+               S07:00000253:  C9
+F04:0147       	
+F04:0148       PrintCharNoInc:
+F04:0149       	push hl
+               S07:00000254:  E5
+F04:0150       	push bc
+               S07:00000255:  C5
+F04:0151       	push af
+               S07:00000256:  F5
+F04:0152       	
+F04:0153       	
+F04:0154       	
+F04:0155       		
+F04:0156       		
+F04:0157       		push af
+               S07:00000257:  F5
+F04:0158       			ld a,(NextCharY)
+               S07:00000258:  FA 01 C0
+F04:0159       			ld b,a
+               S07:0000025B:  47
+F04:0160       			
+F04:0161       			ld a,(NextCharX)
+               S07:0000025C:  FA 00 C0
+F04:0162       			ld c,a
+               S07:0000025F:  4F
+F04:0163       			
+F04:0164       		
+F04:0165       			ld	hl, $9800
+               S07:00000260:  21 00 98
+F04:0166       			xor a
+               S07:00000263:  AF
+F04:0167       		
+F04:0168       			rr b
+               S07:00000264:  CB 18
+F04:0169       			rra
+               S07:00000266:  1F
+F04:0170       			rr b
+               S07:00000267:  CB 18
+F04:0171       			rra
+               S07:00000269:  1F
+F04:0172       			rr b
+               S07:0000026A:  CB 18
+F04:0173       			rra
+               S07:0000026C:  1F
+F04:0174       			or c
+               S07:0000026D:  B1
+F04:0175       			ld c,a
+               S07:0000026E:  4F
+F04:0176       			add hl,bc
+               S07:0000026F:  09
+F04:0177       		pop af
+               S07:00000270:  F1
+F04:0178       		sub 32		;no char <32!
+               S07:00000271:  D6 20
+F04:0179       		ld (hl),a
+               S07:00000273:  77
+F04:0180       		
+F04:0181       	pop af
+               S07:00000274:  F1
+F04:0182       	pop bc
+               S07:00000275:  C1
+F04:0183       	pop hl
+               S07:00000276:  E1
+F04:0184       	ret
+               S07:00000277:  C9
+F04:0185       ReadJoy:
+F04:0186       	LD A,$20      ; <- bit 5 = $20
+               S07:00000278:  3E 20
+F04:0187       	LD ($FF00),A  ; <- select P14 by setting it low
+               S07:0000027A:  EA 00 FF
+F04:0188       	LD A,($FF00);
+               S07:0000027D:  FA 00 FF
+F04:0189       	LD A,($FF00) ;  <- wait a few cycles
+               S07:00000280:  FA 00 FF
+F04:0190       	CPL           ; <- complement A
+               S07:00000283:  2F
+F04:0191       	AND $0F       ; <- get only first 4 bits
+               S07:00000284:  E6 0F
+F04:0192       	SWAP A        ; <- swap it
+               S07:00000286:  CB 37
+F04:0193       	LD B,A        ; <- store A in B
+               S07:00000288:  47
+F04:0194       	LD A,$10
+               S07:00000289:  3E 10
+F04:0195       	LD ($FF00),A   ;<- select P15 by setting it low
+               S07:0000028B:  EA 00 FF
+F04:0196       	LD A,($FF00)
+               S07:0000028E:  FA 00 FF
+F04:0197       	LD A,($FF00)
+               S07:00000291:  FA 00 FF
+F04:0198       	LD A,($FF00)
+               S07:00000294:  FA 00 FF
+F04:0199       	LD A,($FF00)
+               S07:00000297:  FA 00 FF
+F04:0200       	LD A,($FF00)
+               S07:0000029A:  FA 00 FF
+F04:0201       	LD A,($FF00)  ; <- Wait a few MORE cycles
+               S07:0000029D:  FA 00 FF
+F04:0202       	CPL           ; <- complement (invert)
+               S07:000002A0:  2F
+F04:0203       	AND $0F       ; <- get first 4 bits
+               S07:000002A1:  E6 0F
+F04:0204       	OR B          ; <- put A and B together
+               S07:000002A3:  B0
+F04:0205       	ret
+               S07:000002A4:  C9
+F04:0206       WaitChar:
+F04:0207       	
+F04:0208       	ld a,(SelKeyChar)
+               S07:000002A5:  FA 02 C0
+F04:0209       	call PrintCharNoInc
+               S07:000002A8:  CD 54 02
+F04:0210       
+F04:0211       	push bc
+               S07:000002AB:  C5
+F04:0212       		call ReadJoy
+               S07:000002AC:  CD 78 02
+F04:0213       		ld b,a
+               S07:000002AF:  47
+F04:0214       		ld a,(SelKeyChar)
+               S07:000002B0:  FA 02 C0
+F04:0215       		
+F04:0216       		bit 0,b
+               S07:000002B3:  CB 40
+F04:0217       		jr nz,WaitCharDone
+               S07:000002B5:  20 26
+F04:0218       		
+F04:0219       		bit 6,b
+               S07:000002B7:  CB 70
+F04:0220       		jr z,WaitCharNotDown
+               S07:000002B9:  28 01
+F04:0221       		inc a
+               S07:000002BB:  3C
+F04:0222       WaitCharNotDown:
+F04:0223       		bit 7,b
+               S07:000002BC:  CB 78
+F04:0224       		jr z,WaitCharNotUp
+               S07:000002BE:  28 01
+F04:0225       		dec a
+               S07:000002C0:  3D
+F04:0226       WaitCharNotUp:
+F04:0227       		ld bc,&3000
+               S07:000002C1:  01 00 30
+F04:0228       		push af
+               S07:000002C4:  F5
+F04:0229       WaitCharDelay:
+F04:0230       			dec bc
+               S07:000002C5:  0B
+F04:0231       			ld a,b
+               S07:000002C6:  78
+F04:0232       			or c
+               S07:000002C7:  B1
+F04:0233       			jr nz,WaitCharDelay
+               S07:000002C8:  20 FB
+F04:0234       		pop af
+               S07:000002CA:  F1
+F04:0235       		cp 32
+               S07:000002CB:  FE 20
+F04:0236       		jr nc,WaitCharNotTooLow
+               S07:000002CD:  30 02
+F04:0237       		ld a,96+32-1
+               S07:000002CF:  3E 7F
+F04:0238       WaitCharNotTooLow:
+F04:0239       		cp 32+96
+               S07:000002D1:  FE 80
+F04:0240       		jr c,WaitCharNotTooHigh
+               S07:000002D3:  38 02
+F04:0241       		ld a,32
+               S07:000002D5:  3E 20
+F04:0242       WaitCharNotTooHigh:
+F04:0243       		ld (SelKeyChar),a
+               S07:000002D7:  EA 02 C0
+F04:0244       		
+F04:0245       		
+F04:0246       	pop bc
+               S07:000002DA:  C1
+F04:0247       	jr WaitChar
+               S07:000002DB:  18 C8
+F04:0248       	
+F04:0249       WaitCharDone:
+F04:0250       	pop bc
+               S07:000002DD:  C1
+F04:0251       	ret
+               S07:000002DE:  C9
+F04:0252       	
+F04:0253               ;LD B,A         <- store A in D
+F04:0254               ;LD A,($FF8B)   <- read old joy data from ram
+F04:0255               ;XOR B          <- toggle w/current button bit
+F04:0256               ;AND B          <- get current button bit back
+F04:0257               ;LD ($FF8C),A   <- save in new Joydata storage
+F04:0258               ;LD A,B         <- put original value in A
+F04:0259               ;LD ($FF8B),A   <- store it as old joy data
+F04:0260       		;LD A,$30       <- deselect P14 and P15
+F04:0261               ;LD ($FF00),A   <- RESET Joypad
+F04:0262               
+F04:0263       		
+F04:0264       	ret
+               S07:000002DF:  C9
+F04:0265       NewLine:
+F04:0266       	push af
+               S07:000002E0:  F5
+F04:0267       		ld a,(NextCharY)
+               S07:000002E1:  FA 01 C0
+F04:0268       		inc a
+               S07:000002E4:  3C
+F04:0269       		ld (NextCharY),a
+               S07:000002E5:  EA 01 C0
+F04:0270       		xor a
+               S07:000002E8:  AF
+F04:0271       		ld (NextCharX),a
+               S07:000002E9:  EA 00 C0
+F04:0272       	pop af
+               S07:000002EC:  F1
+F04:0273       	ret
+               S07:000002ED:  C9
+F04:0274       PrintString:
+F04:0275       	ld a,(hl)	;Print a '255' terminated string 
+               S07:000002EE:  7E
+F04:0276       	cp 255
+               S07:000002EF:  FE FF
+F04:0277       	ret z
+               S07:000002F1:  C8
+F04:0278       	inc hl
+               S07:000002F2:  23
+F04:0279       	call PrintChar
+               S07:000002F3:  CD 47 02
+F04:0280       	jr PrintString
+               S07:000002F6:  18 F6
+F04:0281       
+F04:0282       
+F04:0283       Locate:		;Locate X=H Y=L
+F04:0284       	push af
+               S07:000002F8:  F5
+F04:0285       		ld a,L
+               S07:000002F9:  7D
+F04:0286       		ld (NextCharY),a
+               S07:000002FA:  EA 01 C0
+F04:0287       		ld a,H
+               S07:000002FD:  7C
+F04:0288       		ld (NextCharX),a
+               S07:000002FE:  EA 00 C0
+F04:0289       	pop af
+               S07:00000301:  F1
+F04:0290       	ret
+               S07:00000302:  C9
+F04:0291       	
+F04:0292       LCDWait:
+F04:0293       	push    af
+               S07:00000303:  F5
+F04:0294               di
+               S07:00000304:  F3
+F04:0295       .waitagain
+F04:0296               ld      a,($FF41)  
+               S07:00000305:  FA 41 FF
+F04:0297               and     %00000010  
+               S07:00000308:  E6 02
+F04:0298               jr      nz,.waitagain 
+               S07:0000030A:  20 F9
+F04:0299           pop     af	
+               S07:0000030C:  F1
+F04:0300       	ret
+               S07:0000030D:  C9
+F04:0301       
+F04:0302       	
+F04:0303       StopLCD:
+F04:0304               ld      a,($FF40)
+               S07:0000030E:  FA 40 FF
+F04:0305               rlca                    ; Put the high bit of LCDC into the Carry flag
+               S07:00000311:  07
+F04:0306               ret     nc              ; Screen is off already. Exit.
+               S07:00000312:  D0
+F04:0307       .wait:							; Loop until we are in VBlank
+F04:0308               ld      a,($FF44)
+               S07:00000313:  FA 44 FF
+F04:0309               cp      145             ; Is display on scan line 145 yet?
+               S07:00000316:  FE 91
+F04:0310               jr      nz,.wait        ; no, keep waiting
+               S07:00000318:  20 F9
+F04:0311               ld      a,($FF40)	; Turn off the LCD
+               S07:0000031A:  FA 40 FF
+F04:0312               res     7,a             ; Reset bit 7 of LCDC
+               S07:0000031D:  CB BF
+F04:0313               ld      ($FF40),a
+               S07:0000031F:  EA 40 FF
+F04:0314               ret
+               S07:00000322:  C9
+F04:0315       		
+F04:0316       		
+F04:0317       		
+F04:0318       SetVRAM::
+F04:0319       	inc	b
+               S07:00000323:  04
+F04:0320       	inc	c
+               S07:00000324:  0C
+F04:0321       	jr	.skip
+               S07:00000325:  18 05
+F04:0322       .loop   call LCDWait
+               S07:00000327:  CD 03 03
+F04:0323               ldi      (hl),a
+               S07:0000032A:  22
+F04:0324               ei
+               S07:0000032B:  FB
+F04:0325       .skip	dec	c
+               S07:0000032C:  0D
+F04:0326       	jr	nz,.loop
+               S07:0000032D:  20 F8
+F04:0327       	dec	b
+               S07:0000032F:  05
+F04:0328       	jr	nz,.loop
+               S07:00000330:  20 F5
+F04:0329       	ret
+               S07:00000332:  C9
+F04:0330       
+F04:0331       	
+F04:0332       ;		    -GRB	
+F04:0333       GBPal:	dw &0008
+               S07:00000333:  08 00
+F04:0334       		dw &000F
+               S07:00000335:  0F 00
+F04:0335       		dw &000F
+               S07:00000337:  0F 00
+F04:0336       		dw &0FF0
+               S07:00000339:  F0 0F
+F04:0337       
+F04:0338       FontData:
+F04:0339       	incbin "Z:\ResALL\Font96.FNT" ; ASCII character set from devrs.com
+               S07:0000033B:  00 00 00 00 00 00 00 00 10 18 18 18 18 00 18 00
+               S07:0000034B:  28 6C 28 00 00 00 00 00 00 28 7C 28 7C 28 00 00
+F04:0340       
+F03:0029       	endif
+F03:0030       	ifdef BuildGBC
+F03:0031       		include "..\SrcGB\GB_V1_Functions.asm" 
+F03:0032       	endif
+F00:0076       	include "..\SrcALL\V1_Footer.asm"
+F05:0001       	ifdef BuildMSX
+F05:0002       		read "..\SrcMSX\MSX_V1_Footer.asm" 
+F05:0003       	endif
+F05:0004       	ifdef BuildCPC
+F05:0005       		read "..\SrcCPC\CPC_V1_Footer.asm" 
+F05:0006       	endif
+F05:0007       	ifdef BuildENT
+F05:0008       		read "..\SrcENT\ENT_V1_Footer.asm" 
+F05:0009       	endif
+F00:0077       
+
+
+Sections:
+S01  seg0
+S02  seg40
+S03  seg48
+S04  seg50
+S05  seg58
+S06  seg60
+S07  seg100
+
+
+Sources:
+F00  HelloWorld.asm
+F01  ..\SrcALL\V1_Header.asm
+F02  ..\SrcGB\GB_V1_header.asm
+F03  ..\SrcALL\V1_Functions.asm
+F04  ..\SrcGB\GB_V1_Functions.asm
+F05  ..\SrcALL\V1_Footer.asm
+
+
+Symbols:
+ SetVRAM loop EXPR(807=0x0) ABS 
+ SetVRAM skip EXPR(812=0x0) ABS 
+ StopLCD wait EXPR(787=0x0) ABS 
+ LCDWait waitagain EXPR(773=0x0) ABS 
+LCDWait EXPR(771=0x0) ABS 
+WaitCharNotTooHigh EXPR(727=0x0) ABS 
+WaitCharNotTooLow EXPR(721=0x0) ABS 
+WaitCharDelay EXPR(709=0x0) ABS 
+WaitCharNotUp EXPR(705=0x0) ABS 
+WaitCharNotDown EXPR(700=0x0) ABS 
+WaitCharDone EXPR(733=0x0) ABS 
+ReadJoy EXPR(632=0x0) ABS 
+PrintCharNoInc EXPR(596=0x0) ABS 
+SetVRAM EXPR(803=0x0) ABS 
+ Copy2Bit loop EXPR(553=0x0) ABS 
+ Copy2Bit skip EXPR(558=0x0) ABS 
+SetGBCPAL EXPR(531=0x0) ABS 
+SetGBCPalettes EXPR(492=0x0) ABS 
+GBPal EXPR(819=0x0) ABS 
+Copy2Bit EXPR(549=0x0) ABS 
+FontData EXPR(827=0x0) ABS 
+StopLCD EXPR(782=0x0) ABS 
+SelKeyChar EXPR(49154=0x0) EQU 
+NextCharY EXPR(49153=0x0) EQU 
+NextCharX EXPR(49152=0x0) EQU 
+ret EXPR(402=0x0) UNUSED ABS 
+SHUTDOWN EXPR(445=0x0) ABS 
+PrintChar EXPR(583=0x0) ABS 
+Message3 EXPR(432=0x0) ABS 
+WaitChar EXPR(677=0x0) ABS 
+Message2 EXPR(419=0x0) ABS 
+NewLine EXPR(736=0x0) ABS 
+PrintString EXPR(750=0x0) ABS 
+Message EXPR(402=0x0) ABS 
+Locate EXPR(760=0x0) ABS 
+LocateAgain EXPR(350=0x0) ABS 
+Cls EXPR(565=0x0) ABS 
+DOINIT EXPR(447=0x0) ABS 
+begin EXPR(336=0x0) ABS 
+sstart EXPR(97=0x0) UNUSED ABS 
+sLCDC EXPR(65=0x0) UNUSED ABS 
+BuildGMB EXPR(1=0x0) UNUSED EQU 
+vasm EXPR(1=0x0) UNUSED EQU 
+__RPTCNT EXPR(-1=0xffffffff) INTERNAL 
+__VASM EXPR(0=0x0) INTERNAL 
+
+There have been no errors.
