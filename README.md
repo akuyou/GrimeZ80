@@ -6,3 +6,6 @@ https://www.youtube.com/playlist?list=PLp_QNRIYljFqwHWKzqpOcYl4bq6RUrvu4
 
 and a summary of how the code works here:
 https://youtu.be/xNUN43k6XMs
+
+and a small website showing it playing:
+http://www.chibiakumas.com/z80/grimez80.php
